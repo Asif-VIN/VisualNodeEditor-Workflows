@@ -253,8 +253,8 @@ export async function evaluatorWorker(ctx: WorkerContext): Promise<WorkerResult>
   const start = Date.now();
   await delay(300); // Simulate evaluation
   
-  const query = ctx.inputs.query || '';
-  const answer = ctx.inputs.answer || '';
+  const query = (ctx.inputs.query && ctx.inputs.query[0]) || '';
+  const answer = (ctx.inputs.answer && ctx.inputs.answer[0]) || '';
   const rubric = ctx.controls.rubricName || 'accuracy';
   
   // Mock evaluation
