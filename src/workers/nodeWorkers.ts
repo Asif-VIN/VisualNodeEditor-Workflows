@@ -292,7 +292,7 @@ export async function guardrailWorker(ctx: WorkerContext): Promise<WorkerResult>
   const start = Date.now();
   await delay(200); // Simulate policy check
   
-  const answer = ctx.inputs.answer || '';
+  const answer = (ctx.inputs.answer && ctx.inputs.answer[0]) || '';
   let policies: any = {};
   try {
     policies = JSON.parse(ctx.controls.policies || '{}');
