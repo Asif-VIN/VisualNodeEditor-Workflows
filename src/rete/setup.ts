@@ -1,6 +1,6 @@
 import { NodeEditor, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
-import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
+import { ConnectionPlugin, Presets as ConnectionPresets, BidirectFlow } from 'rete-connection-plugin';
 import { SveltePlugin, Presets } from 'rete-svelte-plugin';
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin';
 import { ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
