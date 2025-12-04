@@ -106,36 +106,35 @@
       const { createNode } = await import('../rete/nodes');
       const { ClassicPreset } = await import('rete');
 
-      // Create a simple RAG workflow
+      console.log('📦 Creating example graph...');
+
+      // Create a simple 2-node workflow for easier testing
       const input = createNode('input');
-      const retriever = createNode('retriever');
-      const ranker = createNode('ranker');
-      const summarizer = createNode('summarizer');
       const output = createNode('output');
 
       await editor.addNode(input);
-      await editor.addNode(retriever);
-      await editor.addNode(ranker);
-      await editor.addNode(summarizer);
       await editor.addNode(output);
 
-      // Position nodes
-      await area.translate(input.id, { x: 50, y: 100 });
-      await area.translate(retriever.id, { x: 320, y: 100 });
-      await area.translate(ranker.id, { x: 620, y: 100 });
-      await area.translate(summarizer.id, { x: 920, y: 100 });
-      await area.translate(output.id, { x: 1220, y: 100 });
+      // Position nodes with more space
+      await area.translate(input.id, { x: 300, y: 200 });
+      await area.translate(output.id, { x: 700, y: 200 });
 
-      // Create connections
-      await editor.addConnection(new ClassicPreset.Connection(input, 'value', retriever, 'query'));
-      await editor.addConnection(new ClassicPreset.Connection(retriever, 'chunks', ranker, 'chunks'));
-      await editor.addConnection(new ClassicPreset.Connection(ranker, 'ranked', summarizer, 'chunks'));
-      await editor.addConnection(new ClassicPreset.Connection(summarizer, 'summary', output, 'value'));
+      console.log('✅ Nodes created:', { input: input.id, output: output.id });
+
+      // Create a simple connection
+      try {
+        const conn = new ClassicPreset.Connection(input, 'value', output, 'value');
+        await editor.addConnection(conn);
+        console.log('✅ Connection created:', conn);
+      } catch (connError) {
+        console.error('❌ Failed to create connection:', connError);
+      }
 
       // Update graph store
       graphActions.updateFromEditor(editor, area);
+      console.log('✅ Example graph complete');
     } catch (error) {
-      console.error('Error creating example graph:', error);
+      console.error('❌ Error creating example graph:', error);
     }
   }
 
