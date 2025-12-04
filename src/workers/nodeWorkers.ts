@@ -216,8 +216,8 @@ export async function summarizerWorker(ctx: WorkerContext): Promise<WorkerResult
   const start = Date.now();
   await delay(500); // Simulate LLM call
   
-  const text = ctx.inputs.text || '';
-  const chunks = ctx.inputs.chunks || [];
+  const text = (ctx.inputs.text && ctx.inputs.text[0]) || '';
+  const chunks = (ctx.inputs.chunks && ctx.inputs.chunks[0]) || [];
   const maxLength = ctx.controls.maxLength || 200;
   
   let contentToSummarize = text;
