@@ -332,7 +332,7 @@ export async function outputWorker(ctx: WorkerContext): Promise<WorkerResult> {
   const start = Date.now();
   await delay(50);
   
-  const value = ctx.inputs.value;
+  const value = (ctx.inputs.value && ctx.inputs.value[0]) || ctx.inputs.value;
   const end = Date.now();
   
   return {
