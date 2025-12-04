@@ -123,11 +123,11 @@ function setupKeyboardShortcuts(
     // Select all (Ctrl/Cmd + A)
     if ((e.ctrlKey || e.metaKey) && e.key === 'a') {
       e.preventDefault();
-      const nodes = editor.getNodes();
-      nodes.forEach((node) => {
+      const nodes = Array.from(editor.getNodes());
+      for (const node of nodes) {
         (node as any).selected = true;
-      });
-      await area.update('node', node.id);
+        await area.update('node', node.id);
+      }
     }
 
     // Zoom in (Ctrl/Cmd + =)
