@@ -37,7 +37,8 @@ export async function createEditor(container: HTMLElement) {
   const render = new SveltePlugin<Schemes, any>();
 
   // Setup connection preset FIRST (before registering plugins)
-  connection.addPreset(() =>
+  // IMPORTANT: Call setup() directly, not wrapped in arrow function
+  connection.addPreset(
     ConnectionPresets.classic.setup({
       makeConnection(from, to, context) {
         const [source, target] = context === 'socket' ? [from, to] : [to, from];
@@ -54,6 +55,7 @@ export async function createEditor(container: HTMLElement) {
         );
         
         editor.addConnection(conn);
+        console.log('✅ Connection created:', conn);
         return true;
       },
       canMakeConnection(from, to) {
@@ -81,7 +83,7 @@ export async function createEditor(container: HTMLElement) {
         }
 
         const compatible = isSocketCompatible(sourceOutput.socket, targetInput.socket);
-        console.log(`Socket compatibility check: ${sourceOutput.socket.name} → ${targetInput.socket.name} = ${compatible}`);
+        console.log(`✅ Socket compatibility: ${sourceOutput.socket.name} → ${targetInput.socket.name} = ${compatible}`);
         return compatible;
       },
     })
