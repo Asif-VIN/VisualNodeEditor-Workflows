@@ -36,58 +36,66 @@ export async function createEditor(container: HTMLElement) {
   const connection = new ConnectionPlugin<Schemes, any>();
   const render = new SveltePlugin<Schemes, any>();
 
-  // Setup connection preset FIRST (before registering plugins)
-  // IMPORTANT: Call setup() directly, not wrapped in arrow function
-  connection.addPreset(
-    ConnectionPresets.classic.setup({
-      makeConnection(from, to, context) {
-        const [source, target] = context === 'socket' ? [from, to] : [to, from];
-        const sourceNode = editor.getNode(source.nodeId);
-        const targetNode = editor.getNode(target.nodeId);
-        
-        if (!sourceNode || !targetNode) return false;
-        
+  // Setup connection preset using BidirectFlow for drag-to-connect
+  connection.addPreset(() => new BidirectFlow({
+    makeConnection(from, to, context) {
+      console.log('🔗 Making connection:', { from, to, context });
+      
+      // Determine source and target based on context
+      const isSocket = context === 'socket';
+      const sourceInfo = isSocket ? from : to;
+      const targetInfo = isSocket ? to : from;
+      
+      // Prevent self-connections
+      if (sourceInfo.nodeId === targetInfo.nodeId) {
+        console.log('❌ Cannot connect node to itself');
+        return false;
+      }
+      
+      // Get nodes
+      const sourceNode = editor.getNode(sourceInfo.nodeId);
+      const targetNode = editor.getNode(targetInfo.nodeId);
+      
+      if (!sourceNode || !targetNode) {
+        console.log('❌ Nodes not found');
+        return false;
+      }
+      
+      // Check socket compatibility
+      const sourceOutput = sourceNode.outputs[sourceInfo.key];
+      const targetInput = targetNode.inputs[targetInfo.key];
+      
+      if (!sourceOutput || !targetInput) {
+        console.log('❌ Sockets not found');
+        return false;
+      }
+      
+      const compatible = isSocketCompatible(sourceOutput.socket, targetInput.socket);
+      console.log(`Socket compatibility: ${sourceOutput.socket.name} → ${targetInput.socket.name} = ${compatible}`);
+      
+      if (!compatible) {
+        console.log('❌ Incompatible socket types');
+        return false;
+      }
+      
+      // Create connection
+      try {
         const conn = new Connection(
           sourceNode as any,
-          source.key,
+          sourceInfo.key,
           targetNode as any,
-          target.key
+          targetInfo.key
         );
         
         editor.addConnection(conn);
-        console.log('✅ Connection created:', conn);
+        console.log('✅ Connection created successfully!');
         return true;
-      },
-      canMakeConnection(from, to) {
-        // Prevent self-connections
-        if (from.nodeId === to.nodeId) {
-          console.log('❌ Cannot connect node to itself');
-          return false;
-        }
-
-        // Check socket compatibility
-        const sourceNode = editor.getNode(from.nodeId);
-        const targetNode = editor.getNode(to.nodeId);
-
-        if (!sourceNode || !targetNode) {
-          console.log('❌ Nodes not found');
-          return false;
-        }
-
-        const sourceOutput = sourceNode.outputs[from.key];
-        const targetInput = targetNode.inputs[to.key];
-
-        if (!sourceOutput || !targetInput) {
-          console.log('❌ Sockets not found');
-          return false;
-        }
-
-        const compatible = isSocketCompatible(sourceOutput.socket, targetInput.socket);
-        console.log(`✅ Socket compatibility: ${sourceOutput.socket.name} → ${targetInput.socket.name} = ${compatible}`);
-        return compatible;
-      },
-    })
-  );
+      } catch (error) {
+        console.error('❌ Failed to create connection:', error);
+        return false;
+      }
+    }
+  }));
 
   // Setup rendering preset
   render.addPreset(Presets.classic.setup());
