@@ -97,37 +97,41 @@
   async function createExampleGraph() {
     if (!editor || !area) return;
 
-    const { createNode } = await import('../rete/nodes');
+    try {
+      const { createNode } = await import('../rete/nodes');
+      const { ClassicPreset } = await import('rete');
 
-    // Create a simple RAG workflow
-    const input = createNode('input');
-    const retriever = createNode('retriever');
-    const ranker = createNode('ranker');
-    const summarizer = createNode('summarizer');
-    const output = createNode('output');
+      // Create a simple RAG workflow
+      const input = createNode('input');
+      const retriever = createNode('retriever');
+      const ranker = createNode('ranker');
+      const summarizer = createNode('summarizer');
+      const output = createNode('output');
 
-    await editor.addNode(input);
-    await editor.addNode(retriever);
-    await editor.addNode(ranker);
-    await editor.addNode(summarizer);
-    await editor.addNode(output);
+      await editor.addNode(input);
+      await editor.addNode(retriever);
+      await editor.addNode(ranker);
+      await editor.addNode(summarizer);
+      await editor.addNode(output);
 
-    // Position nodes
-    await area.translate(input.id, { x: 50, y: 100 });
-    await area.translate(retriever.id, { x: 320, y: 100 });
-    await area.translate(ranker.id, { x: 620, y: 100 });
-    await area.translate(summarizer.id, { x: 920, y: 100 });
-    await area.translate(output.id, { x: 1220, y: 100 });
+      // Position nodes
+      await area.translate(input.id, { x: 50, y: 100 });
+      await area.translate(retriever.id, { x: 320, y: 100 });
+      await area.translate(ranker.id, { x: 620, y: 100 });
+      await area.translate(summarizer.id, { x: 920, y: 100 });
+      await area.translate(output.id, { x: 1220, y: 100 });
 
-    // Create connections
-    const Connection = (editor as any).Connection;
-    await editor.addConnection(new Connection(input, 'value', retriever, 'query'));
-    await editor.addConnection(new Connection(retriever, 'chunks', ranker, 'chunks'));
-    await editor.addConnection(new Connection(ranker, 'ranked', summarizer, 'chunks'));
-    await editor.addConnection(new Connection(summarizer, 'summary', output, 'value'));
+      // Create connections
+      await editor.addConnection(new ClassicPreset.Connection(input, 'value', retriever, 'query'));
+      await editor.addConnection(new ClassicPreset.Connection(retriever, 'chunks', ranker, 'chunks'));
+      await editor.addConnection(new ClassicPreset.Connection(ranker, 'ranked', summarizer, 'chunks'));
+      await editor.addConnection(new ClassicPreset.Connection(summarizer, 'summary', output, 'value'));
 
-    // Update graph store
-    graphActions.updateFromEditor(editor, area);
+      // Update graph store
+      graphActions.updateFromEditor(editor, area);
+    } catch (error) {
+      console.error('Error creating example graph:', error);
+    }
   }
 
   onDestroy(() => {
