@@ -32,9 +32,9 @@ export type { Schemes, Node, Conn };
 
 export async function createEditor(container: HTMLElement) {
   const editor = new NodeEditor<Schemes>();
-  const area = new AreaPlugin<Schemes, SvelteArea2D<Schemes>>(container);
-  const connection = new ConnectionPlugin<Schemes, SvelteArea2D<Schemes>>();
-  const render = new SveltePlugin<Schemes, SvelteArea2D<Schemes>>();
+  const area = new AreaPlugin<Schemes, any>(container);
+  const connection = new ConnectionPlugin<Schemes, any>();
+  const render = new SveltePlugin<Schemes, any>();
 
   // Setup connection validation
   connection.addPreset(() =>
