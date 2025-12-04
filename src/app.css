@@ -180,6 +180,27 @@ body {
   background: var(--text-secondary);
 }
 
+/* Connection plugin specific styles */
+.connection-wrapper {
+  pointer-events: all !important;
+}
+
+.connection-path {
+  pointer-events: all !important;
+  cursor: pointer;
+}
+
+/* Socket wrapper must not block events */
+[data-testid*="socket"] {
+  pointer-events: all !important;
+  cursor: grab;
+}
+
+/* Ensure parent elements don't block */
+.rete > * {
+  pointer-events: all;
+}
+
 /* Utility classes */
 .panel {
   @apply bg-dark-800 border border-dark-600 rounded-lg shadow-lg;
