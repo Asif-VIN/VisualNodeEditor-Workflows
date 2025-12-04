@@ -94,15 +94,16 @@ export async function createEditor(container: HTMLElement) {
   // Setup minimap
   const minimap = new MinimapPlugin<Schemes>();
 
-  editor.use(area);
-  area.use(connection);
-  area.use(render);
+  // Register remaining plugins
   area.use(contextMenu);
   area.use(arrange);
   // area.use(minimap); // Uncomment if minimap container is available
 
-  // Zoom extent
-  AreaExtensions.zoomAt(area, editor.getNodes());
+  // Zoom extent (only if there are nodes)
+  const nodes = editor.getNodes();
+  if (nodes.length > 0) {
+    AreaExtensions.zoomAt(area, nodes);
+  }
 
   // Keyboard shortcuts
   setupKeyboardShortcuts(editor, area);
