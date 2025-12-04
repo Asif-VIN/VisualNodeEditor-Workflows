@@ -91,11 +91,46 @@ body {
   stroke: var(--accent);
   stroke-width: 2px;
   fill: none;
+  pointer-events: all;
 }
 
 .rete-connection.selected {
   stroke: #38bdf8;
   stroke-width: 3px;
+}
+
+.rete-connection path {
+  pointer-events: all;
+  cursor: pointer;
+}
+
+/* Socket colors by type */
+.socket[data-socket-name="number"] {
+  background: #3b82f6 !important;
+}
+
+.socket[data-socket-name="string"] {
+  background: #10b981 !important;
+}
+
+.socket[data-socket-name="json"] {
+  background: #8b5cf6 !important;
+}
+
+.socket[data-socket-name="embedding"] {
+  background: #f97316 !important;
+}
+
+.socket[data-socket-name="documentChunk"] {
+  background: #eab308 !important;
+}
+
+.socket[data-socket-name="toolCall"] {
+  background: #ef4444 !important;
+}
+
+.socket[data-socket-name="any"] {
+  background: #6b7280 !important;
 }
 
 .rete-control input,
