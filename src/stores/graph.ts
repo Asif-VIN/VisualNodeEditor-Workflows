@@ -1,10 +1,12 @@
 import { writable, get } from 'svelte/store';
 import type { SerializedGraph, GraphMeta } from '../types/graph';
 import Ajv from 'ajv';
+import addFormats from 'ajv-formats';
 import graphSchema from '../schemas/graph.schema.json';
 import { v4 as uuidv4 } from 'uuid';
 
 const ajv = new Ajv();
+addFormats(ajv);
 const validateSchema = ajv.compile(graphSchema);
 
 export interface GraphState {
