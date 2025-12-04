@@ -11,7 +11,16 @@ export default defineConfig({
   server: {
     port: 3000,
     host: '0.0.0.0',
-    strictPort: false
+    strictPort: false,
+    hmr: {
+      clientPort: 443,
+      protocol: 'wss'
+    },
+    allowedHosts: [
+      'visual-ai-pipeline.preview.emergentagent.com',
+      '.emergentagent.com',
+      'localhost'
+    ]
   },
   optimizeDeps: {
     include: ['rete', 'rete-area-plugin', 'rete-connection-plugin']
