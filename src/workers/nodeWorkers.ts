@@ -103,7 +103,7 @@ export async function rankerWorker(ctx: WorkerContext): Promise<WorkerResult> {
   const start = Date.now();
   await delay(250); // Simulate reranking
   
-  const chunks = ctx.inputs.chunks || [];
+  const chunks = (ctx.inputs.chunks && ctx.inputs.chunks[0]) || [];
   const threshold = ctx.controls.scoreThreshold || 0.5;
   
   // Mock reranking
