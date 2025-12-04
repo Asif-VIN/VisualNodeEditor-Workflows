@@ -73,6 +73,7 @@
     }
 
     // Import connections
+    const { ClassicPreset } = await import('rete');
     for (const connData of graph.connections) {
       const sourceNode = Array.from(editor.getNodes()).find(
         (n: any) => nodeMap.get(connData.source)?.id === n.id
@@ -82,14 +83,18 @@
       );
 
       if (sourceNode && targetNode) {
-        await editor.addConnection(
-          new (editor as any).Connection(
-            sourceNode,
-            connData.sourceOutput,
-            targetNode,
-            connData.targetInput
-          )
-        );
+        try {
+          await editor.addConnection(
+            new ClassicPreset.Connection(
+              sourceNode,
+              connData.sourceOutput,
+              targetNode,
+              connData.targetInput
+            )
+          );
+        } catch (error) {
+          console.warn('Failed to create connection:', error);
+        }
       }
     }
   }
