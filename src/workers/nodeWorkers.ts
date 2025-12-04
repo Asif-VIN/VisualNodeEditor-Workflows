@@ -68,7 +68,7 @@ export async function retrieverWorker(ctx: WorkerContext): Promise<WorkerResult>
   
   await delay(300); // Simulate retrieval
   
-  const query = ctx.inputs.query || '';
+  const query = (ctx.inputs.query && ctx.inputs.query[0]) || '';
   const topK = ctx.controls.topK || 5;
   
   // Mock chunks
