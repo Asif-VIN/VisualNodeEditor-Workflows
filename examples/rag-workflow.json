@@ -1,0 +1,132 @@
+{
+  "version": "1.0.0",
+  "meta": {
+    "id": "example-rag-workflow",
+    "name": "RAG + Agent Pipeline",
+    "description": "Example workflow demonstrating RAG retrieval, ranking, routing, and summarization",
+    "createdAt": "2025-01-01T00:00:00.000Z",
+    "updatedAt": "2025-01-01T00:00:00.000Z",
+    "nodesCount": 7,
+    "connectionsCount": 6
+  },
+  "nodes": [
+    {
+      "id": "input-1",
+      "type": "input",
+      "label": "Input",
+      "position": { "x": 50, "y": 100 },
+      "controls": {
+        "value": "What are the benefits of using RAG in AI applications?"
+      }
+    },
+    {
+      "id": "retriever-1",
+      "type": "retriever",
+      "label": "Retriever",
+      "position": { "x": 320, "y": 100 },
+      "controls": {
+        "topK": 5,
+        "filters": "{}",
+        "embeddingModel": "text-embedding-3-small"
+      }
+    },
+    {
+      "id": "ranker-1",
+      "type": "ranker",
+      "label": "Ranker",
+      "position": { "x": 620, "y": 100 },
+      "controls": {
+        "rerankModel": "cohere-rerank-v3",
+        "scoreThreshold": 0.5
+      }
+    },
+    {
+      "id": "router-1",
+      "type": "router",
+      "label": "Router",
+      "position": { "x": 920, "y": 100 },
+      "controls": {
+        "routingRules": "{\n  \"default\": \"summarizer\",\n  \"tool\": \"toolCall\"\n}"
+      }
+    },
+    {
+      "id": "summarizer-1",
+      "type": "summarizer",
+      "label": "Summarizer",
+      "position": { "x": 1220, "y": 50 },
+      "controls": {
+        "model": "gpt-4-turbo",
+        "maxLength": 200
+      }
+    },
+    {
+      "id": "guardrail-1",
+      "type": "guardrail",
+      "label": "Guardrail",
+      "position": { "x": 1520, "y": 50 },
+      "controls": {
+        "policies": "{\n  \"blockPII\": true,\n  \"blockToxic\": true\n}"
+      }
+    },
+    {
+      "id": "output-1",
+      "type": "output",
+      "label": "Output",
+      "position": { "x": 1820, "y": 50 },
+      "controls": {}
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn-1",
+      "source": "input-1",
+      "sourceOutput": "value",
+      "target": "retriever-1",
+      "targetInput": "query"
+    },
+    {
+      "id": "conn-2",
+      "source": "retriever-1",
+      "sourceOutput": "chunks",
+      "target": "ranker-1",
+      "targetInput": "chunks"
+    },
+    {
+      "id": "conn-3",
+      "source": "ranker-1",
+      "sourceOutput": "ranked",
+      "target": "router-1",
+      "targetInput": "context"
+    },
+    {
+      "id": "conn-4",
+      "source": "input-1",
+      "sourceOutput": "value",
+      "target": "router-1",
+      "targetInput": "query"
+    },
+    {
+      "id": "conn-5",
+      "source": "summarizer-1",
+      "sourceOutput": "summary",
+      "target": "guardrail-1",
+      "targetInput": "answer"
+    },
+    {
+      "id": "conn-6",
+      "source": "guardrail-1",
+      "sourceOutput": "result",
+      "target": "output-1",
+      "targetInput": "value"
+    }
+  ],
+  "comments": [
+    {
+      "id": "comment-1",
+      "text": "This is an example RAG + Agent workflow. It retrieves documents, ranks them, routes based on query type, summarizes the content, applies guardrails, and outputs the final result.",
+      "position": { "x": 50, "y": 300 },
+      "size": { "width": 400, "height": 100 },
+      "links": []
+    }
+  ]
+}
