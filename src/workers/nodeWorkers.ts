@@ -138,8 +138,8 @@ export async function routerWorker(ctx: WorkerContext): Promise<WorkerResult> {
   const start = Date.now();
   await delay(150); // Simulate routing logic
   
-  const query = ctx.inputs.query || '';
-  const context = ctx.inputs.context || {};
+  const query = (ctx.inputs.query && ctx.inputs.query[0]) || '';
+  const context = (ctx.inputs.context && ctx.inputs.context[0]) || {};
   
   let rules: any = {};
   try {
