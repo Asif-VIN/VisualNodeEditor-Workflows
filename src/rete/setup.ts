@@ -36,36 +36,64 @@ export async function createEditor(container: HTMLElement) {
   const connection = new ConnectionPlugin<Schemes, any>();
   const render = new SveltePlugin<Schemes, any>();
 
-  // Register plugins first
-  editor.use(area);
-  area.use(connection);
-  area.use(render);
-
-  // Setup connection validation after registration
+  // Setup connection preset FIRST (before registering plugins)
   connection.addPreset(() =>
     ConnectionPresets.classic.setup({
+      makeConnection(from, to, context) {
+        const [source, target] = context === 'socket' ? [from, to] : [to, from];
+        const sourceNode = editor.getNode(source.nodeId);
+        const targetNode = editor.getNode(target.nodeId);
+        
+        if (!sourceNode || !targetNode) return false;
+        
+        const conn = new Connection(
+          sourceNode as any,
+          source.key,
+          targetNode as any,
+          target.key
+        );
+        
+        editor.addConnection(conn);
+        return true;
+      },
       canMakeConnection(from, to) {
         // Prevent self-connections
-        if (from.nodeId === to.nodeId) return false;
+        if (from.nodeId === to.nodeId) {
+          console.log('❌ Cannot connect node to itself');
+          return false;
+        }
 
         // Check socket compatibility
         const sourceNode = editor.getNode(from.nodeId);
         const targetNode = editor.getNode(to.nodeId);
 
-        if (!sourceNode || !targetNode) return false;
+        if (!sourceNode || !targetNode) {
+          console.log('❌ Nodes not found');
+          return false;
+        }
 
         const sourceOutput = sourceNode.outputs[from.key];
         const targetInput = targetNode.inputs[to.key];
 
-        if (!sourceOutput || !targetInput) return false;
+        if (!sourceOutput || !targetInput) {
+          console.log('❌ Sockets not found');
+          return false;
+        }
 
-        return isSocketCompatible(sourceOutput.socket, targetInput.socket);
+        const compatible = isSocketCompatible(sourceOutput.socket, targetInput.socket);
+        console.log(`Socket compatibility check: ${sourceOutput.socket.name} → ${targetInput.socket.name} = ${compatible}`);
+        return compatible;
       },
     })
   );
 
-  // Setup rendering
+  // Setup rendering preset
   render.addPreset(Presets.classic.setup());
+
+  // Register plugins
+  editor.use(area);
+  area.use(connection);
+  area.use(render);
 
   // Register selectable nodes
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
