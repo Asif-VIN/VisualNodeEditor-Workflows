@@ -36,7 +36,12 @@ export async function createEditor(container: HTMLElement) {
   const connection = new ConnectionPlugin<Schemes, any>();
   const render = new SveltePlugin<Schemes, any>();
 
-  // Setup connection validation
+  // Register plugins first
+  editor.use(area);
+  area.use(connection);
+  area.use(render);
+
+  // Setup connection validation after registration
   connection.addPreset(() =>
     ConnectionPresets.classic.setup({
       canMakeConnection(from, to) {
@@ -59,12 +64,13 @@ export async function createEditor(container: HTMLElement) {
     })
   );
 
-  // Register plugins
+  // Setup rendering
+  render.addPreset(Presets.classic.setup());
+
+  // Register selectable nodes
   AreaExtensions.selectableNodes(area, AreaExtensions.selector(), {
     accumulating: AreaExtensions.accumulateOnCtrl(),
   });
-
-  render.addPreset(Presets.classic.setup());
 
   // Setup context menu
   const contextMenu = new ContextMenuPlugin<Schemes>({
