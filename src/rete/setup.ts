@@ -1,7 +1,7 @@
-import { NodeEditor, GetSchemes, ClassicPreset } from 'rete';
+import { NodeEditor, ClassicPreset } from 'rete';
 import { AreaPlugin, AreaExtensions } from 'rete-area-plugin';
 import { ConnectionPlugin, Presets as ConnectionPresets } from 'rete-connection-plugin';
-import { SveltePlugin, Presets, SvelteArea2D } from 'rete-svelte-plugin';
+import { SveltePlugin, Presets } from 'rete-svelte-plugin';
 import { AutoArrangePlugin, Presets as ArrangePresets } from 'rete-auto-arrange-plugin';
 import { ContextMenuPlugin, Presets as ContextMenuPresets } from 'rete-context-menu-plugin';
 import { MinimapPlugin } from 'rete-minimap-plugin';
@@ -20,10 +20,13 @@ type Node =
   | Nodes.GuardrailNode
   | Nodes.OutputNode;
 
-type Conn = Connection<Node, Node>;
-type Schemes = GetSchemes<Node, Conn>;
-
 class Connection<A extends Node, B extends Node> extends ClassicPreset.Connection<A, B> {}
+
+type Conn = Connection<Node, Node>;
+type Schemes = {
+  Node: Node;
+  Connection: Conn;
+};
 
 export type { Schemes, Node, Conn };
 
